@@ -89,12 +89,22 @@
           font-size: 24px;
           padding: 5px 0;
       }
+      .action-button:hover {
+          color: #444;
+      }
+      .split-label {
+          margin-right: 10px;
+          padding-right: 10px;
+          border-right: 1px solid #eee;
+      }
   </style>
 </head>
 <body>
 <script src="utils.js"></script>
   <div class="table" id="table"></div>
-  
+  <p id="split">
+  </p>
+
   <div class="content">
     <p id="description" class="description">
 
@@ -106,6 +116,7 @@
     </div>
   </div>
   <script>
+    let split = 1;
     let selected = [2, 3];
     let current = 1;
     let scores = {
@@ -132,6 +143,12 @@
           </div>
         </div>
 `)
+        document.getElementById('split').innerHTML = `
+          <label class="split-label">Пилить 1 игрока <input id="slit-1" type="radio" onclick="changeSplit(1)" ${split === 1 ? 'checked': ''} name="split" value="1"></label>
+          <label class="split-label">Пилить 2 игрока <input type="radio" onclick="changeSplit(2)" ${split === 2 ? 'checked': ''} name="split" value="2"></label>
+          <label class="split-label">Пилить случайного игрока <input type="radio" onclick="changeSplit(-1)" name="split" ${split === -1 ? 'checked': ''} value="-1"></label>
+
+        `
         document.getElementById('description').innerHTML = `
           Вы на ${current} слоте. Пилятся ${selected[0]} и ${selected[1]}. За кого будете голосовать?
         `
@@ -146,6 +163,7 @@
         `
       }
       document.getElementById('table').innerHTML = slots.join('');
+      console.log('split', split);
     }
 
     generateCase();
@@ -160,11 +178,16 @@
       generateCase();
       render();
     }
+    function changeSplit(num) {
+      split = num;
+      generateCase();
+      render();
+    }
     function randomNum() {
       return Math.floor(Math.random() * 10) + 1;
     }
     function generateCase() {
-      const first = randomNum();
+      const first = split < 0 ? randomNum(): split;
       let second = randomNum();
       while (second === first ) {
         second = randomNum();
