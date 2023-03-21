@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Мафия попил</title>
+  <style>
+      .table {
+          display: flex;
+          flex-wrap: wrap;
+          margin-left: -10px;
+      }
+      .slot {
+          width: 20%;
+          box-sizing: border-box;
+          padding-left: 10px;
+          padding-bottom: 40px;
+      }
+      .person {
+          border: 1px solid #444;
+          box-sizing: border-box;
+          display: flex;
+          font-size: 48px;
+          font-weight: bold;
+      }
+      .num {
+        flex: 1;
+        background-color: #444;
+        color: rgba(255, 0, 0, 0.81);
+        text-align: center;
+      }
+      .vote {
+          flex: 1;
+          color: #444444;
+          text-align: center;
+      }
+      .selected {
+          border-color: rgba(255, 0, 0, 0.81);
+          border-width: 4px;
+      }
+  </style>
+</head>
+<body>
+  <div class="table" id="table">
+    <div class="slot">
+      <div class="person" data-num="1">
+        <div class="num">1</div>
+        <div class="vote"></div>
+      </div>
+    </div>
+    <div class="slot">
+      <div class="person" data-num="2">
+        <div class="num">2</div>
+        <div class="vote"></div>
+      </div>
+    </div>
+    <div class="slot">
+      <div class="person" data-num="3">
+        <div class="num">3</div>
+        <div class="vote"></div>
+      </div>
+    </div>
+    <div class="slot">
+      <div class="person" data-num="4">
+        <div class="num">4</div>
+        <div class="vote"></div>
+      </div>
+    </div>
+    <div class="slot">
+      <div class="person" data-num="5">
+        <div class="num">5</div>
+        <div class="vote"></div>
+      </div>
+    </div>
+    <div class="slot">
+      <div class="person" data-num="10">
+        <div class="num">10</div>
+        <div class="vote"></div>
+      </div>
+    </div>
+    <div class="slot">
+      <div class="person" data-num="9">
+        <div class="num">9</div>
+        <div class="vote"></div>
+      </div>
+    </div>
+    <div class="slot">
+      <div class="person" data-num="8">
+        <div class="num">8</div>
+        <div class="vote"></div>
+      </div>
+    </div>
+    <div class="slot">
+      <div class="person" data-num="7">
+        <div class="num">7</div>
+        <div class="vote"></div>
+      </div>
+    </div>
+    <div class="slot">
+      <div class="person" data-num="6">
+        <div class="num">6</div>
+        <div class="vote"></div>
+      </div>
+    </div>
+  </div>
+  
+  <p>*Выберите 2 игроков для попила</p>
+  <script>
+    let selected = [];
+    document.getElementById('table')
+      .addEventListener('click', (e) => {
+        clearVoting();
+        const parent = e.target.parentNode;
+        if (parent.classList.contains('person')) {
+          const num = Number.parseInt(parent.dataset['num'], 10);
+          if (Number.isFinite(num)) {
+            addSelection(num, parent);
+            if (selected.length === 2) {
+              vote();
+            }
+            if (selected.length > 2) {
+              clearSelection();
+              clearVoting();
+              addSelection(num, parent);
+            }
+          }
+          console.log(selected);
+        }
+      })
+    function addSelection(num, parent) {
+      if (selected.includes(num)) {
+        const idx = selected.findIndex(v => v === num);
+        selected.splice(idx, 1);
+        parent.classList.remove('selected');
+      } else {
+        selected.push(num);
+        parent.classList.add('selected');
+      }
+    }
+    function vote() {
+      if (selected.length !== 2) {
+        return;
+      }
+      let [first, second] = selected;
+      if (second < first) {
+        [first, second] = [second, first];
+      }
+
+      const voteForFirst = [];
+      if (tablePart(first) !== tablePart(second)) {
+        // simple division
+        if (tablePart(first) === 1) {
+          voteForFirst.push(6, 7, 8, 9, 10);
+        } else {
+          voteForFirst.push(1, 2, 3, 4, 5);
+        }
+      } else {
+        for (let i = 0; i < 5; i++) {
+          console.log((first + i) % 10 + 1)
+          voteForFirst.push((first + i) % 10 + 1);
+        }
+        // harder division
+      }
+
+      const votes = document.querySelectorAll('.vote');
+      for (let i = 0; i < votes.length; i++) {
+        const vote = votes[i];
+        const num = Number.parseInt(vote.parentNode.dataset['num'], 10);
+        vote.innerHTML = voteForFirst.includes(num) ? first: second;
+      }
+    }
+    function clearSelection() {
+      selected = [];
+      const persons = document.querySelectorAll('.person');
+      for (const person of persons) {
+        person.classList.remove('selected');
+      }
+    }
+    function clearVoting() {
+      const votes = document.querySelectorAll('.vote');
+      for (const vote of votes) {
+        vote.innerHTML = '';
+      }
+    }
+    function tablePart(num) {
+      if (num >= 1 && num <= 5) {
+        return 1;
+      }
+      return 2;
+    }
+  </script>
+</body>
+</html>
