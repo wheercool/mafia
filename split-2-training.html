@@ -126,7 +126,8 @@
 
     function render() {
       let slots = [];
-      for (let i = 1; i <= 10; i++) {
+      const nums = [1, 2, 3, 4, 5, 10, 9, 8, 7, 6];
+      for (const i of nums) {
         const classes = [];
         const events = [];
         if (selected.includes(i)) {
