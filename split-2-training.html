@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Мафия попил</title>
+  <style>
+      .table {
+          display: flex;
+          flex-wrap: wrap;
+          margin-left: -10px;
+      }
+      .slot {
+          width: 20%;
+          box-sizing: border-box;
+          padding-left: 10px;
+          padding-bottom: 40px;
+      }
+      .person {
+          position: relative;
+          border: 1px solid #444;
+          box-sizing: border-box;
+          display: flex;
+          font-size: 48px;
+          font-weight: bold;
+      }
+      .num {
+        flex: 1;
+        text-align: center;
+
+        background-color: #eee;
+        color: #444;
+      }
+      .current > .num {
+          color: white;
+          background-color: #444;
+      }
+      .vote {
+          flex: 1;
+          color: #444444;
+          text-align: center;
+      }
+      .selected {
+          outline: 4px solid rgba(255, 0, 0, 0.81);
+      }
+      .person:after {
+          display: block;
+          position: absolute;
+          top: -6px;
+          left: -6px;
+          content: attr(data-order);
+          color: #444;
+          font-size: 14px;
+          text-align: center;
+          font-family: monospace;
+          line-height: 24px;
+          width: 24px;
+          height: 24px;
+          border-radius: 50%;
+          background-color: white;
+          border: 1px solid #444;
+      }
+      .person:not([data-order]):after {
+          display: none;
+      }
+      .content {
+          margin: auto;
+          display: flex;
+          flex-direction: column;
+      }
+      .description {
+          text-align: center;
+      }
+      .actions {
+          display: flex;
+          margin: auto;
+          width: 400px;
+          gap: 10px;
+      }
+      .scores {
+          margin: auto;
+          margin-top: 10px;
+          display: flex;
+      }
+      .action-button {
+          flex: 1;
+          font-size: 24px;
+          padding: 5px 0;
+      }
+  </style>
+</head>
+<body>
+<script src="utils.js"></script>
+  <div class="table" id="table"></div>
+  
+  <div class="content">
+    <p id="description" class="description">
+
+    </p>
+    <div id="actions" class="actions">
+
+    </div>
+    <div id="scores" class="scores">
+    </div>
+  </div>
+  <script>
+    let selected = [2, 3];
+    let current = 1;
+    let scores = {
+      total: 0,
+      value: 0
+    }
+
+    function render() {
+      let slots = [];
+      for (let i = 1; i <= 10; i++) {
+        const classes = [];
+        const events = [];
+        if (selected.includes(i)) {
+          classes.push('selected');
+          events.push(`onclick="voteFor(${i})`)
+        }
+        if (current === i) {
+          classes.push('current');
+        }
+        slots.push(`
+        <div class="slot">
+          <div class="person ${classes.join(' ')}" data-num="${i}" ${events}">
+            <div class="num">${i}</div>
+          </div>
+        </div>
+`)
+        document.getElementById('description').innerHTML = `
+          Вы на ${current} слоте. Пилятся ${selected[0]} и ${selected[1]}. За кого будете голосовать?
+        `
+        document.getElementById('scores').innerHTML = `
+          <div class="scores__title">Очки:</div>
+          <div class="scores__value">${scores.value}/${scores.total}</div>
+        `
+
+        document.getElementById('actions').innerHTML = `
+          <button class="action-button" onclick="voteFor(${selected[0]})">${selected[0]}</button>
+          <button class="action-button" onclick="voteFor(${selected[1]})">${selected[1]}</button>
+        `
+      }
+      document.getElementById('table').innerHTML = slots.join('');
+    }
+
+    generateCase();
+    render();
+    // commands
+    function voteFor(num) {
+      const votes = split2(selected);
+      if (votes[num].includes(current)) {
+        scores.value++;
+      }
+      scores.total++;
+      generateCase();
+      render();
+    }
+    function randomNum() {
+      return Math.floor(Math.random() * 10) + 1;
+    }
+    function generateCase() {
+      const first = randomNum();
+      let second = randomNum();
+      while (second === first ) {
+        second = randomNum();
+      }
+      current = randomNum();
+      selected[0] = first;
+      selected[1] = second;
+      console.log(split2(selected))
+    }
+  </script>
+</body>
+</html>
