@@ -8,8 +8,10 @@ function split2(selected) {
   }
 
   const votesForFirst = [];
+  let type;
   if (tablePart(first) !== tablePart(second)) {
     // simple division
+    type = 'простой'
     if (tablePart(first) === 1) {
       votesForFirst.push(6, 7, 8, 9, 10);
     } else {
@@ -17,6 +19,7 @@ function split2(selected) {
     }
   } else {
     // complex division
+    type = 'сложный'
     for (let i = 0; i < 5; i++) {
       votesForFirst.push((first + i) % 10 + 1);
     }
@@ -29,7 +32,8 @@ function split2(selected) {
   }
   return {
     [first]: votesForFirst,
-    [second]: votesForSecond
+    [second]: votesForSecond,
+    type
   }
 }
 

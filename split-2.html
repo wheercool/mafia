@@ -7,6 +7,9 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Мафия попил</title>
   <style>
+      body {
+          padding: 10px;
+      }
       .table {
           display: flex;
           flex-wrap: wrap;
@@ -20,26 +23,31 @@
       }
       .person {
           position: relative;
-          border: 1px solid #444;
+          /*border: 1px solid #444;*/
           box-sizing: border-box;
-          display: flex;
           font-size: 48px;
           font-weight: bold;
       }
       .num {
         flex: 1;
-        background-color: #444;
-        color: rgba(255, 0, 0, 0.81);
+        background-color: #eee;
+        color: #444;
+
+        /*background-color: #444;*/
+        /*color: rgba(255, 0, 0, 0.81);*/
         text-align: center;
       }
       .vote {
           flex: 1;
+          font-size: 36px;
+          font-weight: normal;
+          font-family: monospace;
           color: #444444;
           text-align: center;
+          height: 48px;
       }
-      .selected {
-          border-color: rgba(255, 0, 0, 0.81);
-          border-width: 4px;
+      .person.selected > .num {
+          outline: 4px solid rgba(255, 0, 0, 0.81);
       }
       .person:after {
           display: block;
@@ -126,8 +134,9 @@
       </div>
     </div>
   </div>
-  
   <p>*Выберите 2 игроков для попила</p>
+  <div id="split"></div>
+  <script src="utils.js"></script>
   <script>
     let selected = [];
     document.getElementById('table')
@@ -173,36 +182,16 @@
       }
     }
     function vote() {
-      if (selected.length !== 2) {
-        return;
-      }
-      let [first, second] = selected;
-      if (second < first) {
-        [first, second] = [second, first];
-      }
-
-      const voteForFirst = [];
-      if (tablePart(first) !== tablePart(second)) {
-        // simple division
-        if (tablePart(first) === 1) {
-          voteForFirst.push(6, 7, 8, 9, 10);
-        } else {
-          voteForFirst.push(1, 2, 3, 4, 5);
-        }
-      } else {
-        for (let i = 0; i < 5; i++) {
-          console.log((first + i) % 10 + 1)
-          voteForFirst.push((first + i) % 10 + 1);
-        }
-        // harder division
-      }
+      const split = split2(selected)
+      const [first, second] = selected;
 
       const votes = document.querySelectorAll('.vote');
       for (let i = 0; i < votes.length; i++) {
         const vote = votes[i];
         const num = Number.parseInt(vote.parentNode.dataset['num'], 10);
-        vote.innerHTML = voteForFirst.includes(num) ? first: second;
+        vote.innerHTML = split[first].includes(num) ? first: second;
       }
+      document.getElementById('split').innerHTML = `"${split.type.toUpperCase()}" попил`;
     }
     function clearSelection() {
       selected = [];
